@@ -1,6 +1,61 @@
 <html>
-  <head> </head>
+  <head>
+    <style>
+      body {
+        margin: 0;
+      }
+
+      canvas {
+        display: block;
+        background: blue;
+      }
+    </style>
+  </head>
   <body>
-    <h1>HELLO</h1>
+    <canvas id="mycanvas"></canvas>
+    <script src="pixi.js"></script>
+    <script>
+      const canvas = document.getElementById('mycanvas');
+      const app = new PIXI.Application({
+        view: canvas,
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+      const texture = PIXI.Texture.from('sprite.png');
+      const img = new PIXI.Sprite(texture);
+      img.interactive = true;
+      img.x = app.renderer.width / 2;
+      img.y = app.renderer.height / 2;
+      img.anchor.x = 0.5;
+      img.anchor.y = 0.5;
+      img.on('mousedown', onDown);
+      img.on('touchstart', onDown);
+
+      app.stage.addChild(img);
+
+      app.ticker.add(animate);
+
+      let flag = true;
+      let counter = 0;
+
+      function animate() {
+        if (flag === true) {
+          img.rotation += 0.1;
+          counter++;
+        } else {
+          img.rotation -= 0.1;
+          counter++;
+        }
+
+        if (counter > 100) {
+          counter = 0;
+          flag = !flag;
+        }
+      }
+
+      function onDown(eventData) {
+        flag = !flag;
+      }
+    </script>
   </body>
 </html>
