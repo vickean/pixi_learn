@@ -4,8 +4,10 @@ import { getLocalIP } from './network-utils.js';
 const app = express();
 const port = 8000;
 
-app.get('/', (req, res) => {
-  res.send('hello world');
+app.use(express.static('public'));
+
+app.get('/api', (req, res) => {
+  res.send('this is an api page');
 });
 
 app.listen(port, () => {
