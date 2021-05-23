@@ -1,0 +1,89 @@
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0;
+      }
+
+      canvas {
+        display: block;
+        background: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="mycanvas"></canvas>
+    <script src="/pixi/pixi.js"></script>
+    <script src="/pixi-graphics-extras/graphics-extras.js"></script>
+    <script>
+      const canvas = document.getElementById('mycanvas');
+
+      let _w = window.innerWidth;
+      let _h = window.innerHeight;
+
+      const app = new PIXI.Application({
+        view: canvas,
+        width: _w,
+        height: _h,
+        resolution: window.devicePixelRatio,
+        autoDensity: true,
+      });
+
+      window.addEventListener('resize', resize);
+
+      function resize() {
+        _w = window.innerWidth;
+        _h = window.innerHeight;
+
+        app.renderer.resize(_w, _h);
+      }
+
+      let radius = 50;
+
+      let graphic = new PIXI.Graphics();
+      app.stage.addChild(graphic);
+
+      //
+      // graphic.lineStyle(5, 0x00ff00);
+      graphic.beginFill(0xff0000);
+      // graphic.drawCircle(0, 0, 100);
+      // graphic.drawRect(0, 0, 100, 200);
+      // graphic.drawStar(0, 0, 5, 100, 40);
+      // graphic.drawShape(new PIXI.Circle(0, 0, 10));
+      // graphic.drawPolygon([
+      //   new PIXI.Point(100, 100),
+      //   new PIXI.Point(100, 200),
+      //   new PIXI.Point(200, 100),
+      // ]);
+      // graphic.moveTo(0, 0);
+      // graphic.lineTo(100, 100);
+      // graphic.lineTo(100, 200);
+      // graphic.bezierCurveTo(-200, 200, -200, 100, -100, 0);
+      // graphic.quadraticCurveTo(-200, -100, 0, -200);
+      // graphic.arc(0, 0, 50, 0, 0.5);
+      graphic.arc(0, 0, 50, 0, Math.PI * 2);
+      // graphic.closePath();
+      graphic.endFill();
+
+      app.ticker.add(animate);
+
+      let delta = 0;
+
+      function animate() {
+        delta += 0.1;
+        radius = 50 + Math.sin(delta) * 25;
+
+        graphic.clear();
+        graphic.beginFill(0xff00ff);
+        graphic.arc(
+          app.renderer.screen.width / 2,
+          app.renderer.screen.height / 2,
+          radius,
+          0,
+          Math.PI * 2
+        );
+        graphic.endFill();
+      }
+    </script>
+  </body>
+</html>

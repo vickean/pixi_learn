@@ -13,6 +13,32 @@
   </head>
   <body>
     <canvas id="mycanvas"></canvas>
+    <script id="vertShader" type="x-shader/x-vert">
+      attribute vec2 aVertexPosition;
+      attribute vec2 aTextureCoord;
+
+      uniform mat3 projectionMatrix;
+
+      varying vec2 vTextureCoord;
+
+      void main(void)
+      {
+        gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
+        vTextureCoord = aTextureCoord;
+      }
+    </script>
+    <script id="fragShader" type="x-shader/x-frag">
+      varying vec2 vTextureCoord;
+      uniform sampler2D uSampler;
+      uniform float delta;
+      void main(void){
+        vec4 color = texture2D(uSampler, vTextureCoord);
+        if (color.a != 0.0) {
+          color.r = delta;
+        }
+        gl_FragColor = color;
+      }
+    </script>
     <script src="/pixi/pixi.js"></script>
     <script src="/pixi-graphics-extras/graphics-extras.js"></script>
     <script>
@@ -38,22 +64,28 @@
         app.renderer.resize(_w, _h);
       }
 
-      let graphic = new PIXI.Graphics();
-      graphic.position.set(app.renderer.width / 2, app.renderer.height / 2);
-      app.stage.addChild(graphic);
+      let vShader = vertShader.innerHTML;
+      let fShader = fragShader.innerHTML;
+      let uniforms = {
+        delta: 0,
+      };
+      const myFilter = new PIXI.Filter(vShader, fShader, uniforms);
 
-      //
-      graphic.lineStyle(5, 0x00ff00);
-      graphic.beginFill(0xff0000);
-      // graphic.drawCircle(0, 0, 100);
-      // graphic.drawRect(0, 0, 100, 200);
-      graphic.drawStar(0, 0, 5, 100, 40);
-      graphic.closePath();
-      graphic.endFill();
+      const texture = PIXI.Texture.from('/assets/sprite.png');
+      const img = new PIXI.Sprite(texture);
+      img.anchor.set(0.5);
+      img.filters = [myFilter];
+      app.stage.addChild(img);
 
       app.ticker.add(animate);
 
-      function animate() {}
+      let delta = 0;
+
+      function animate() {
+        img.position.set(app.screen.width / 2, app.screen.height / 2);
+        delta += 0.1;
+        uniforms.delta = 0.5 + Math.sin(delta) * 0.5;
+      }
     </script>
   </body>
 </html>
