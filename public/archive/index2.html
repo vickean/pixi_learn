@@ -1,0 +1,97 @@
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0;
+      }
+
+      canvas {
+        display: block;
+        background: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="mycanvas"></canvas>
+    <script src="/pixi/pixi.js"></script>
+    <script>
+      const canvas = document.getElementById('mycanvas');
+
+      let _w = window.innerWidth;
+      let _h = window.innerHeight;
+
+      /*
+      const app = new PIXI.Application({
+        view: canvas,
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+      */
+
+      // manual way to qrite PIXI.Application
+      const renderer = new PIXI.Renderer({
+        view: canvas,
+        width: _w,
+        height: _h,
+        resolution: window.devicePixelRatio, // adjust reso to window
+        autoDensity: true, // to scale to retina displays
+      });
+
+      window.addEventListener('resize', resize);
+
+      function resize() {
+        _w = window.innerWidth;
+        _h = window.innerHeight;
+
+        renderer.resize(_w, _h);
+      }
+
+      const stage = new PIXI.Container();
+
+      const texture = PIXI.Texture.from('/assets/sprite.png');
+      const img = new PIXI.Sprite(texture);
+      img.interactive = true;
+      // img.x = app.renderer.width / 2;
+      // img.y = app.renderer.height / 2;
+
+      img.anchor.x = 0.5;
+      img.anchor.y = 0.5;
+      img.on('mousedown', onDown);
+      img.on('touchstart', onDown);
+
+      // app.stage.addChild(img);
+      stage.addChild(img);
+
+      // app.ticker.add(animate);
+      const ticker = new PIXI.Ticker();
+      ticker.add(animate);
+      ticker.start();
+
+      let flag = true;
+      let counter = 0;
+
+      function animate() {
+        img.x = renderer.screen.width / 2;
+        img.y = renderer.screen.height / 2;
+
+        if (flag === true) {
+          img.rotation += 0.1;
+          counter++;
+        } else {
+          img.rotation -= 0.1;
+          counter++;
+        }
+
+        if (counter > 100) {
+          counter = 0;
+          flag = !flag;
+        }
+        renderer.render(stage);
+      }
+
+      function onDown(eventData) {
+        flag = !flag;
+      }
+    </script>
+  </body>
+</html>

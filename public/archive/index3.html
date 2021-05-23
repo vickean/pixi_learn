@@ -1,0 +1,96 @@
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0;
+      }
+
+      canvas {
+        display: block;
+        background: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="mycanvas"></canvas>
+    <script src="/pixi/pixi.js"></script>
+    <script>
+      const canvas = document.getElementById('mycanvas');
+
+      let _w = window.innerWidth;
+      let _h = window.innerHeight;
+
+      const app = new PIXI.Application({
+        view: canvas,
+        width: _w,
+        height: _h,
+        resolution: window.devicePixelRatio,
+        autoDensity: true,
+      });
+
+      window.addEventListener('resize', resize);
+
+      function resize() {
+        _w = window.innerWidth;
+        _h = window.innerHeight;
+
+        app.renderer.resize(_w, _h);
+      }
+
+      console.log(PIXI.utils.TextureCache);
+
+      let loader = PIXI.Loader.shared;
+
+      loader.onComplete.add(handleLoadComplete);
+      loader.onLoad.add(handleLoadAsset);
+      loader.onError.add(handleLoadError);
+      loader.onProgress.add(handleLoadProgress);
+
+      loader.add('guy_right', '/assets/sprite.png');
+      loader.add('guy_left', '/assets/sprite2.png');
+      loader.load();
+
+      // loader
+      //   .add('sprite.png')
+      //   .add('sprite2.png')
+      //   .on('progress', handleLoadProgress)
+      //   .on('load', handleLoadAsset)
+      //   .on('error', handleLoadError)
+      //   .load(handleLoadComplete);
+
+      let img;
+
+      function handleLoadAsset(loader, resource) {
+        console.log(`${resource.name} loaded`);
+      }
+
+      function handleLoadError(loader, resource) {
+        console.log(`${resource.name} load error`);
+      }
+
+      function handleLoadProgress(loader, resource) {
+        console.log(`${resource.name}: ${loader.progress}% loaded`);
+      }
+
+      function handleLoadComplete() {
+        let texture = loader.resources.guy_right.texture;
+        img = new PIXI.Sprite(texture);
+        img.anchor.x = 0.5;
+        img.anchor.y = 0.5;
+        app.stage.addChild(img);
+        app.ticker.add(animate);
+
+        // swap texture after 2 seconds
+        setTimeout(() => {
+          img.texture = loader.resources.guy_left.texture;
+        }, 2000);
+      }
+
+      function animate() {
+        img.x = app.renderer.screen.width / 2;
+        img.y = app.renderer.screen.height / 2;
+        img.rotation += 0.1;
+      }
+    </script>
+  </body>
+</html>

@@ -14,7 +14,6 @@
   <body>
     <canvas id="mycanvas"></canvas>
     <script src="/pixi/pixi.js"></script>
-    <script src="/pixi-graphics-extras/graphics-extras.js"></script>
     <script>
       const canvas = document.getElementById('mycanvas');
 
@@ -38,22 +37,41 @@
         app.renderer.resize(_w, _h);
       }
 
-      let graphic = new PIXI.Graphics();
-      graphic.position.set(app.renderer.width / 2, app.renderer.height / 2);
-      app.stage.addChild(graphic);
+      const texture = PIXI.Texture.from('/assets/sprite.png');
+      const img = new PIXI.Sprite(texture);
+      img.interactive = true;
+      img.anchor.x = 0.5;
+      img.anchor.y = 0.5;
+      img.on('mousedown', onDown);
+      img.on('touchstart', onDown);
 
-      //
-      graphic.lineStyle(5, 0x00ff00);
-      graphic.beginFill(0xff0000);
-      // graphic.drawCircle(0, 0, 100);
-      // graphic.drawRect(0, 0, 100, 200);
-      graphic.drawStar(0, 0, 5, 100, 40);
-      graphic.closePath();
-      graphic.endFill();
+      app.stage.addChild(img);
 
       app.ticker.add(animate);
 
-      function animate() {}
+      let flag = true;
+      let counter = 0;
+
+      function animate() {
+        img.x = app.renderer.screen.width / 2;
+        img.y = app.renderer.screen.height / 2;
+        if (flag === true) {
+          img.rotation += 0.1;
+          counter++;
+        } else {
+          img.rotation -= 0.1;
+          counter++;
+        }
+
+        if (counter > 100) {
+          counter = 0;
+          flag = !flag;
+        }
+      }
+
+      function onDown(eventData) {
+        flag = !flag;
+      }
     </script>
   </body>
 </html>
